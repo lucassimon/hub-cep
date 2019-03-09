@@ -48,8 +48,20 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
+            mkdir -p htmlcov
             make coverage
 
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+      - store_artifacts:
+          path: "htmlcov"
+          destination: html
+
+      - store_artifacts:
+          path: ".coverage"
+
+      - store_test_results:
+          path: ".coverage"
+
