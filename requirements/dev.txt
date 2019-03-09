@@ -10,3 +10,4 @@ mypy
 mypy-extensions
 wheel
 twine
+codecov

@@ -66,6 +66,7 @@ coverage:
 	@pytest --verbose --cov=hub_cep	--color=yes --cov-report html --cov-report xml:cov.xml tests/
 	@coverage html -d htmlcov
 	@coverage-badge > static/coverage.svg
+	@codecov
 
 isort:
 	sh -c "isort --skip-glob=.tox --recursive . "
