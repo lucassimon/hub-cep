@@ -14,9 +14,6 @@ Busca CEP utilizando diferentes provedores de consulta
 .. image:: https://codecov.io/gh/lucassimon/hub-cep/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/lucassimon/hub-cep
 
-.. image:: ./static/coverage.svg
-    :alt: Code coverage Status
-
 .. code-block:: python
 
     import json
