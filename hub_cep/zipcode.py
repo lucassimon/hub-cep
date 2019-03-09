@@ -44,17 +44,17 @@ class ZipCode(AbstractZipCode):
         error, data = self.viacep.search()
 
         if not error:
-            return data
+            return 200, data
 
         error, data = self.postmon.search()
 
         if not error:
-            return data
+            return 200, data
 
         if self.cepaberto:
             error, data = self.cepaberto.search()
 
             if not error:
-                return data
+                return 200, data
 
         return 422, data

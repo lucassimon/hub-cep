@@ -190,7 +190,7 @@ class Cepaberto(AbstractProvider):
         super().__init__(zipcode)
         # Is valid zip_code param
         if token is None or not token:
-            raise TokenError('Token invalid')
+            raise TokenError(Messages.TOKEN_INVALID.value)
 
         self._token = token
 

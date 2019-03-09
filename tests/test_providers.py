@@ -3,6 +3,7 @@ import pytest
 from dotenv import load_dotenv
 
 from hub_cep.providers import Postmon, Viacep, Cepaberto
+from hub_cep.exceptions import ZipcodeError, TokenError
 
 
 ZIPCODE = '78048000'
@@ -46,6 +47,12 @@ class TestViacep:
         client = Viacep(INVALID_ZIPCODE)
         error, data = client.search()
         assert error is True
+
+    def test_raises_zipcode_error(self):
+        with pytest.raises(ZipcodeError) as e:
+            Viacep('')
+
+        assert e.value.args[0] == 'Zipcode invalid.'
 
 
 class TestPostmon:
@@ -123,3 +130,9 @@ class TestCepaberto:
         client = Cepaberto(INVALID_ZIPCODE, token)
         error, data = client.search()
         assert error is True
+
+    def test_raises_zipcode_error(self):
+        with pytest.raises(TokenError) as e:
+            Cepaberto(ZIPCODE, '')
+
+        assert e.value.args[0] == 'Token invalid.'
