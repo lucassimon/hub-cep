@@ -8,3 +8,5 @@ coverage-badge
 isort
 mypy
 mypy-extensions
+wheel
+twine

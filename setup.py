@@ -6,7 +6,7 @@ from __version__ import version
 
 
 def long_description():
-    with open('README.md', encoding='utf8') as f:
+    with open('README.md', encoding='utf-8') as f:
         return f.read()
 
 
@@ -30,7 +30,7 @@ setup(
     license='MIT',
     description=__description__,
     long_description=long_description(),
-    url='https://github.com:lucassimon/api.git',
+    url='https://github.com/lucassimon/hub-cep',
     keywords='correios busca endereco cep',
 
     packages=['hub_cep'],

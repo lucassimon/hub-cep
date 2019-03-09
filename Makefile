@@ -79,11 +79,6 @@ test:
 test-all:
 	tox
 
-dist: clean
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
-
 release:
 	@echo "creating a new release ${v}"
 	@echo "version = '${v}'" > `pwd`/__version__.py
@@ -94,4 +89,8 @@ release:
 	@git push origin ${v}
 	@git push --set-upstream origin "${GIT_CURRENT_BRANCH}"
 	@git push origin
-	twine upload dist/*
+
+deploy: clean
+	@python setup.py sdist bdist_wheel
+	@twine upload dist/*
+
