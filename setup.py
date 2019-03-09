@@ -15,6 +15,17 @@ __description__ = 'Hub to connect multiple cep providers and setup a lambda func
 __author__ = 'Lucas Simon'
 __author_email__ = 'lucassrod@gmail.com'
 
+requirements = [
+    'requests==2.21.0',
+    'requests-toolbelt==0.9.1',
+    'typing'
+]
+
+test_requirements = [
+    'coveralls >= 1.1',
+    'flake8 >= 3.3.0',
+]
+
 testing_extras = [
     'pytest',
     'pytest-cov',
@@ -52,7 +63,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'License :: OSI Approved :: MIT License',
     ],
-    install_requires=[],
+    install_requires=requirements,
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     extras_require={
