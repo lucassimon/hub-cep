@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-
+import os
+import sys
 # Third
 from setuptools import setup
+from setuptools.command.install import install
 from __version__ import version
 
 
 def long_description():
-    with open('README.md', encoding='utf-8') as f:
+    with open('README.rst', encoding='utf-8') as f:
         return f.read()
 
 
@@ -30,6 +32,21 @@ testing_extras = [
     'pytest',
     'pytest-cov',
 ]
+
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+    description = 'verify that the git tag matches our version'
+
+    def run(self):
+        tag = os.getenv('CIRCLE_TAG')
+
+        if tag != version:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, version
+            )
+            sys.exit(info)
+
 
 setup(
     name='hub_cep',
@@ -69,4 +86,7 @@ setup(
     extras_require={
         'testing': testing_extras,
     },
+    cmdclass={
+        'verify': VerifyVersionCommand,
+    }
 )
