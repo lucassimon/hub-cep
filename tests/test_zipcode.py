@@ -13,10 +13,6 @@ class TestAbstractZipcode:
         obj = AbstractZipCode
         return obj
 
-    def test_zipcode_setter(self, data):
-        data.zipcode = ZIPCODE
-        assert data.zipcode == ZIPCODE
-
     def test_raises_not_implemented_error_when_call_search_method(self, data):
         with pytest.raises(NotImplementedError) as e:
             data.search()
