@@ -23,8 +23,6 @@ class AbstractProvider(ABC):
     API_URL = ''
 
     def __init__(self, zipcode):
-
-        # Is valid zip_code param
         if zipcode is None or not zipcode:
             raise ZipcodeError(Messages.ZIPCODE_INVALID.value)
 
@@ -71,23 +69,23 @@ class AbstractProvider(ABC):
         error = True
         info = {'error': error, 'timeout': False, 'message': Messages.STRANGE_ERROR.value}
 
-        return error, info
+        return error, info, res
 
     @abstractmethod
-    def search(self):
-        '''
-        This is a method to get address info from an API
-        '''
-        pass
+    def search():
+        raise NotImplementedError(Messages.NOT_IMPLEMENTED.value)
 
     @abstractmethod
-    def translate(self, info: dict):
-        pass
+    def translate():
+        raise NotImplementedError(Messages.NOT_IMPLEMENTED.value)
 
 
 class Postmon(AbstractProvider):
 
     API_URL: str = 'http://api.postmon.com.br/v1/cep/'
+
+    def get_url(self):
+        return f'{self.API_URL}{self.zipcode}'
 
     def search(self):
         '''
@@ -96,7 +94,7 @@ class Postmon(AbstractProvider):
         error = True
         info = {'error': error, 'timeout': False, 'message': Messages.STRANGE_ERROR.value}
 
-        url = f'{self.API_URL}{self.zipcode}'
+        url = self.get_url()
 
         error, info, res = self.call(url)
 
@@ -139,11 +137,14 @@ class Viacep(AbstractProvider):
 
     API_URL: str = 'http://viacep.com.br/ws/{}/json/unicode/'
 
+    def get_url(self):
+        return self.API_URL.format(self.zipcode)
+
     def search(self):
         error = True
         info = {'error': error, 'message': Messages.STRANGE_ERROR.value}
 
-        url = self.API_URL.format(self.zipcode)
+        url = self.get_url()
 
         error, info, res = self.call(url)
 
@@ -202,6 +203,9 @@ class Cepaberto(AbstractProvider):
     def token(self, token: str):
         self._token = token
 
+    def get_url(self):
+        return self.API_URL.format(self.zipcode)
+
     def get_headers(self):
         return {'Authorization': f'Token token={self.token}'}
 
@@ -209,7 +213,7 @@ class Cepaberto(AbstractProvider):
         error = True
         info = {'error': error, 'message': Messages.STRANGE_ERROR.value}
 
-        url = self.API_URL.format(self.zipcode)
+        url = self.get_url()
 
         error, info, res = self.call(url, self.get_headers())
 

@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class Messages(Enum):
+    NOT_IMPLEMENTED: str = 'Should implement.'
     STRANGE_ERROR: str = 'An error ocurred.'
     SUCCESS: str = 'Success.'
     TOKEN_INVALID: str = 'Token invalid.'

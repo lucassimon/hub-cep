@@ -1,14 +1,18 @@
+
 from os import getenv
 from abc import ABC, abstractmethod
 
-from .exceptions import TokenError
-
+from .exceptions import ZipcodeError, TokenError
+from .messages import Messages
 from .providers import Viacep, Postmon, Cepaberto
 
 
 class AbstractZipCode(ABC):
 
     def __init__(self, zipcode: str):
+        if zipcode is None or not zipcode:
+            raise ZipcodeError(Messages.ZIPCODE_INVALID.value)
+
         self._zipcode = zipcode
 
     @property
@@ -20,8 +24,8 @@ class AbstractZipCode(ABC):
         self._zipcode = zipcode
 
     @abstractmethod
-    def search(self):
-        pass
+    def search():
+        raise NotImplementedError(Messages.NOT_IMPLEMENTED.value)
 
 
 class ZipCode(AbstractZipCode):
@@ -31,10 +35,13 @@ class ZipCode(AbstractZipCode):
 
         self.viacep = Viacep(zipcode)
         self.postmon = Postmon(zipcode)
+        self.cepaberto = None
 
         try:
             token = getenv('CEPABERTO_TOKEN', default='')
-            self.cepaberto = Cepaberto(zipcode, token)
+
+            if token:
+                self.cepaberto = Cepaberto(zipcode, token)
 
         except TokenError:
             self.cepaberto = None

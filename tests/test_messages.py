@@ -1,6 +1,11 @@
 from hub_cep.messages import Messages
 
 
+def test_not_implemented():
+    assert Messages.NOT_IMPLEMENTED.name == 'NOT_IMPLEMENTED'
+    assert Messages.NOT_IMPLEMENTED.value == 'Should implement.'
+
+
 def test_strange_error():
     assert Messages.STRANGE_ERROR.name == 'STRANGE_ERROR'
     assert Messages.STRANGE_ERROR.value == 'An error ocurred.'
