@@ -19,8 +19,7 @@ __author_email__ = 'lucassrod@gmail.com'
 
 requirements = [
     'requests==2.21.0',
-    'requests-toolbelt==0.9.1',
-    'typing'
+    'requests-toolbelt==0.9.1'
 ]
 
 test_requirements = [
