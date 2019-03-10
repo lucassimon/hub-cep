@@ -28,6 +28,15 @@ class TestAbstractZipcode:
 
 class TestZipcode:
 
+    def test_zipcode_getter(self):
+        client = ZipCode(ZIPCODE)
+        assert client.zipcode == ZIPCODE
+
+    def test_zipcode_setter(self):
+        client = ZipCode(ZIPCODE)
+        client.zipcode = INVALID_ZIPCODE
+        assert client.zipcode == INVALID_ZIPCODE
+
     def test_raises_zipcode_error_when_is_empty_string(self):
         with pytest.raises(ZipcodeError) as e:
             ZipCode('')

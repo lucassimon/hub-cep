@@ -200,6 +200,20 @@ class TestPostmon:
         error, data = client.search()
         assert error is True
 
+    def test_returns_error_info_when_search_with_raises_any_exception(self, requests_mock):
+        client = Postmon(ZIPCODE)
+        requests_mock._adapter.register_uri('GET', TestPostmon.FAKE_URL, exc=Exception('Some error'))
+        error, info, = client.search()
+
+        assert error is True
+        assert info == {'error': True, 'timeout': False, 'message': 'Some error'}
+
+    def test_returns_error_info_when_requests_responses_any_status_codes(self, requests_mock):
+        requests_mock.get(TestPostmon.FAKE_URL, status_code=406)
+        client = Postmon(ZIPCODE)
+        error, result = client.search()
+        assert result == {'error': True, 'message': 'An error ocurred.'}
+
 
 class TestCepaberto:
 
@@ -255,3 +269,19 @@ class TestCepaberto:
             Cepaberto(ZIPCODE, '')
 
         assert e.value.args[0] == 'Token invalid.'
+
+    def test_returns_error_info_when_search_with_raises_any_exception(self, requests_mock):
+        token = getenv('CEPABERTO_TOKEN') or None
+        client = Cepaberto(ZIPCODE, token)
+        requests_mock._adapter.register_uri('GET', TestCepaberto.FAKE_URL, exc=Exception('Some error'))
+        error, info, = client.search()
+
+        assert error is True
+        assert info == {'error': True, 'timeout': False, 'message': 'Some error'}
+
+    def test_returns_error_info_when_requests_responses_any_status_codes(self, requests_mock):
+        token = getenv('CEPABERTO_TOKEN') or None
+        requests_mock.get(TestCepaberto.FAKE_URL, status_code=406)
+        client = Cepaberto(ZIPCODE, token)
+        error, result = client.search()
+        assert result == {'error': True, 'message': 'An error ocurred.'}
