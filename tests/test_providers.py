@@ -1,7 +1,18 @@
 from os import getenv
 import pytest
 from dotenv import load_dotenv
-
+from requests import Session
+from requests.exceptions import (
+    ConnectionError,
+    ConnectTimeout,
+    ContentDecodingError,
+    HTTPError,
+    ProxyError,
+    ReadTimeout,
+    SSLError,
+    Timeout,
+    TooManyRedirects
+)
 
 from hub_cep.providers import AbstractProvider, Postmon, Viacep, Cepaberto
 from hub_cep.exceptions import ZipcodeError, TokenError
@@ -14,6 +25,7 @@ load_dotenv()
 
 
 class TestAbstractProvider:
+
     @pytest.fixture(scope='class')
     def data(self):
         obj = AbstractProvider
@@ -48,8 +60,7 @@ class TestViacep:
             'uf': 'MT',
         }
 
-        fake_url = f'http://viacep.com.br/ws/{ZIPCODE}/json/unicode/'
-        requests_mock.get(fake_url, json=fake_response, status_code=200)
+        requests_mock.get(TestViacep.FAKE_URL, json=fake_response, status_code=200)
         client = Viacep(ZIPCODE)
         error, result = client.search()
         return result
@@ -83,6 +94,42 @@ class TestViacep:
             Viacep('')
 
         assert e.value.args[0] == 'Zipcode invalid.'
+
+    def test_raises_connection_timeout_on_request(self, requests_mock):
+
+        client = Viacep(ZIPCODE)
+
+        requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=ConnectTimeout('Timeout'))
+
+        error, info, res = client.call(TestViacep.FAKE_URL)
+
+        assert error is True
+        assert info == {'error': True, 'timeout': True, 'message': 'Timeout'}
+        assert res is None
+
+    def test_raises_http_error_on_request(self, requests_mock):
+
+        client = Viacep(ZIPCODE)
+
+        requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=HTTPError('Http Error'))
+
+        error, info, res = client.call(TestViacep.FAKE_URL)
+
+        assert error is True
+        assert info == {'error': True, 'timeout': True, 'message': 'Http Error'}
+        assert res is None
+
+    def test_raises_exception_on_request(self, requests_mock):
+
+        client = Viacep(ZIPCODE)
+
+        requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=Exception('Some error'))
+
+        error, info, res = client.call(TestViacep.FAKE_URL)
+
+        assert error is True
+        assert info == {'error': True, 'timeout': False, 'message': 'Some error'}
+        assert res is None
 
 
 class TestPostmon:

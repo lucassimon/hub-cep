@@ -1,6 +1,11 @@
 from hub_cep.messages import Messages
 
 
+def test_network_error():
+    assert Messages.NETWORK_ERROR.name == 'NETWORK_ERROR'
+    assert Messages.NETWORK_ERROR.value == 'Network error.'
+
+
 def test_not_implemented():
     assert Messages.NOT_IMPLEMENTED.name == 'NOT_IMPLEMENTED'
     assert Messages.NOT_IMPLEMENTED.value == 'Should implement.'

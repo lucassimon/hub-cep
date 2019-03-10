@@ -43,12 +43,6 @@ class AbstractProvider(ABC):
 
         try:
             res = requests.get(url, headers=headers, timeout=int(getenv('TIMEOUT', default=3)))
-            return False, {'error': error, 'timeout': False, 'message': Messages.SUCCESS.value}, res
-
-        except ConnectionError as e:
-            error = True
-            info = {'error': error, 'timeout': False, 'message': e.args[0].reason.message}
-            return error, info, res
 
         except (
             HTTPError, ProxyError, SSLError, Timeout,
@@ -58,6 +52,14 @@ class AbstractProvider(ABC):
             info = {'error': error, 'timeout': True, 'message': e.__str__()}
             return error, info, res
 
+        except ConnectionError as e:
+            error = True
+
+            message = e.args[0].reason.message if e.args else Messages.NETWORK_ERROR.value
+
+            info = {'error': error, 'timeout': False, 'message': message}
+            return error, info, res
+
         except Exception as e:
             error = True
             info = {'error': error, 'timeout': False, 'message': e.__str__()}
@@ -65,11 +67,7 @@ class AbstractProvider(ABC):
 
         else:
             res.close()
-
-        error = True
-        info = {'error': error, 'timeout': False, 'message': Messages.STRANGE_ERROR.value}
-
-        return error, info, res
+            return False, {'error': error, 'timeout': False, 'message': Messages.SUCCESS.value}, res
 
     @abstractmethod
     def search():
