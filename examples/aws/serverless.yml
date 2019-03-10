@@ -1,0 +1,48 @@
+
+service: zipcodes # NOTE: update this with your service name
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+
+package:
+  exclude:
+    - .git/**
+    - .idea/**
+    - .requirements/**
+    - .venv/**
+    - node_modules/**
+    - env/**
+    - tests/**
+    - README.md
+    - package.json
+    - package-lock.json
+    - requirements.txt
+
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: python3.7
+  stage: dev
+
+  environment:
+    timeout: 3
+
+
+functions:
+  zipcode:
+    handler: handler.get_address
+    events:
+      - http:
+          path: get-address/{cep}
+          method: get
+          integration: lambda
+          cors: true
+          response:
+            headers:
+              "Access-Control-Allow_Origin": "'*'"
+
