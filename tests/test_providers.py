@@ -1,17 +1,10 @@
 from os import getenv
 import pytest
 from dotenv import load_dotenv
-from requests import Session
 from requests.exceptions import (
     ConnectionError,
     ConnectTimeout,
-    ContentDecodingError,
     HTTPError,
-    ProxyError,
-    ReadTimeout,
-    SSLError,
-    Timeout,
-    TooManyRedirects
 )
 
 from hub_cep.providers import AbstractProvider, Postmon, Viacep, Cepaberto
@@ -236,6 +229,15 @@ class TestCepaberto:
         client = Cepaberto(ZIPCODE, token)
         error, result = client.search()
         return result
+
+    def test_token_getter(self):
+        client = Cepaberto(ZIPCODE, '123')
+        assert client.zipcode == ZIPCODE
+
+    def test_token_setter(self):
+        client = Cepaberto(ZIPCODE, '123')
+        client.token = '2'
+        assert client.token == '2'
 
     def test_base_url(self):
         assert Cepaberto.API_URL == TestCepaberto.FAKE_BASE_URL
