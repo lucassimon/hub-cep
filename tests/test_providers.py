@@ -72,6 +72,15 @@ class TestViacep:
         client = Viacep(ZIPCODE)
         assert client.get_url() == TestViacep.FAKE_URL
 
+    def test_zipcode_getter(self):
+        client = Viacep(ZIPCODE)
+        assert client.zipcode == ZIPCODE
+
+    def test_zipcode_setter(self):
+        client = Viacep(ZIPCODE)
+        client.zipcode = INVALID_ZIPCODE
+        assert client.zipcode == INVALID_ZIPCODE
+
     def test_estado(self, viacep_success):
         assert viacep_success.get('data').get('state') == 'MT'
 
@@ -96,11 +105,8 @@ class TestViacep:
         assert e.value.args[0] == 'Zipcode invalid.'
 
     def test_raises_connection_timeout_on_request(self, requests_mock):
-
         client = Viacep(ZIPCODE)
-
         requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=ConnectTimeout('Timeout'))
-
         error, info, res = client.call(TestViacep.FAKE_URL)
 
         assert error is True
@@ -108,28 +114,45 @@ class TestViacep:
         assert res is None
 
     def test_raises_http_error_on_request(self, requests_mock):
-
         client = Viacep(ZIPCODE)
-
         requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=HTTPError('Http Error'))
-
         error, info, res = client.call(TestViacep.FAKE_URL)
 
         assert error is True
         assert info == {'error': True, 'timeout': True, 'message': 'Http Error'}
         assert res is None
 
-    def test_raises_exception_on_request(self, requests_mock):
-
+    def test_raises_connection_error_on_request(self, requests_mock):
         client = Viacep(ZIPCODE)
+        requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=ConnectionError)
+        error, info, res = client.call(TestViacep.FAKE_URL)
 
+        assert error is True
+        assert info == {'error': True, 'timeout': False, 'message': 'Network error.'}
+        assert res is None
+
+    def test_raises_exception_on_request(self, requests_mock):
+        client = Viacep(ZIPCODE)
         requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=Exception('Some error'))
-
         error, info, res = client.call(TestViacep.FAKE_URL)
 
         assert error is True
         assert info == {'error': True, 'timeout': False, 'message': 'Some error'}
         assert res is None
+
+    def test_returns_error_info_when_search_with_raises_any_exception(self, requests_mock):
+        client = Viacep(ZIPCODE)
+        requests_mock._adapter.register_uri('GET', TestViacep.FAKE_URL, exc=Exception('Some error'))
+        error, info, = client.search()
+
+        assert error is True
+        assert info == {'error': True, 'timeout': False, 'message': 'Some error'}
+
+    def test_returns_error_info_when_requests_responses_any_status_codes(self, requests_mock):
+        requests_mock.get(TestViacep.FAKE_URL, status_code=406)
+        client = Viacep(ZIPCODE)
+        error, result = client.search()
+        assert result == {'error': True, 'message': 'An error ocurred.'}
 
 
 class TestPostmon:
