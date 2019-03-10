@@ -2,7 +2,7 @@
 from os import getenv
 from abc import ABC, abstractmethod
 
-from .exceptions import ZipcodeError, TokenError
+from .exceptions import ZipcodeError
 from .messages import Messages
 from .providers import Viacep, Postmon, Cepaberto
 
@@ -37,14 +37,10 @@ class ZipCode(AbstractZipCode):
         self.postmon = Postmon(zipcode)
         self.cepaberto = None
 
-        try:
-            token = getenv('CEPABERTO_TOKEN', default='')
+        token = getenv('CEPABERTO_TOKEN', default='')
 
-            if token:
-                self.cepaberto = Cepaberto(zipcode, token)
-
-        except TokenError:
-            self.cepaberto = None
+        if token:
+            self.cepaberto = Cepaberto(zipcode, token)
 
     def search(self):
 
